@@ -1,0 +1,23 @@
+# ROCm 可选依赖（M5 验证结论，2026-11-20，Windows / Python 3.12.10 / RX 9070 XT gfx1201）
+#
+# 源验证：成功。https://stable.repo.amd.com/rocm/whl-next 当前可用（301 重定向到
+# https://stable.repo.amd.com/rocm/pytorch/whl-next/，pip 自动跟随）。
+# HTTP 证据（curl simple index，均 HTTP 200）：
+#   torch/torch-2.15.0+rocm10.2.0-cp312-cp312-win_amd64.whl        （117,629,153 字节）
+#   amd-torch-device-gfx1201/amd_torch_device_gfx1201-2.15.0+rocm10.2.0-cp312-cp312-win_amd64.whl
+#   pip index versions torch --index-url https://stable.repo.amd.com/rocm/whl-next
+#     → 2.15.0+rocm10.2.0（本机 cp312 win_amd64 可解析；另有 2.14.0/2.13.0 等）
+#   rocm / rocm-bootstrap / rocm-sdk-core / rocm-sdk-libraries / rocm-sdk-device-gfx1201
+#     → 均可解析（10.2.0 / 0.3.0）
+# torch wheel METADATA（HTTP Range 远程读取，未整包下载）：
+#   Requires-Python >=3.11；依赖 filelock、typing-extensions>=4.13、setuptools>=77.0.3、
+#   sympy>=1.13.3、networkx>=2.5.1、jinja2、fsspec>=0.8.5、rocm[libraries]~=10.2.0、
+#   rocm-bootstrap>=0.3.0；extra device-gfx1201 → amd-torch-device-gfx1201==2.15.0+rocm10.2.0
+#   （上述纯 Python 依赖 AMD 源均有镜像）。
+#
+# 精确安装命令（本机有 gfx1201 挂起史，默认不安装；安装后引擎仍受看门狗保护）：
+#   D:/QO/filler-detector/.venv/Scripts/python.exe -m pip install "torch[device-gfx1201]==2.15.0+rocm10.2.0" --index-url https://stable.repo.amd.com/rocm/whl-next
+#   D:/QO/filler-detector/.venv/Scripts/python.exe -m pip install transformers -c requirements.txt
+# 说明：transformers 不在 AMD 源，从 PyPI 单独安装；-c requirements.txt 保护已锁核心版本
+# （tokenizers/huggingface-hub/numpy 等），若 transformers 最新版与锁定版本冲突需另行裁决。
+# 本文件默认不安装任何包；未安装时 /api/engines rocm=false，提交 rocm 任务自动回退 CPU。
